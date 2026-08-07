@@ -63,7 +63,10 @@ export const Calendar: React.FC<CalendarProps> = ({
         {/* Monthly Statistics Skeleton */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/10 dark:border-slate-800/10"></div>
+            <div
+              key={i}
+              className="h-24 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/10 dark:border-slate-800/10"
+            ></div>
           ))}
         </div>
 
@@ -73,7 +76,10 @@ export const Calendar: React.FC<CalendarProps> = ({
         {/* Weekly Performance Skeleton cards */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-24 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/10 dark:border-slate-800/10"></div>
+            <div
+              key={i}
+              className="h-24 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/10 dark:border-slate-800/10"
+            ></div>
           ))}
         </div>
 
@@ -143,18 +149,28 @@ export const Calendar: React.FC<CalendarProps> = ({
     return tradeDate.getMonth() === month && tradeDate.getFullYear() === year;
   });
 
-  const monthlyNetPnl = monthlyTrades.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0);
+  const monthlyNetPnl = monthlyTrades.reduce(
+    (sum, t) => sum + (Number(t.pnl) || 0),
+    0,
+  );
   const monthlyTotalTrades = monthlyTrades.length;
   const monthlyWins = monthlyTrades.filter((t) => t.result === "Win");
   const monthlyLosses = monthlyTrades.filter((t) => t.result === "Loss");
-  const monthlyWinRate = monthlyTotalTrades > 0 ? (monthlyWins.length / monthlyTotalTrades) * 100 : 0;
+  const monthlyWinRate =
+    monthlyTotalTrades > 0
+      ? (monthlyWins.length / monthlyTotalTrades) * 100
+      : 0;
 
-  const monthlyAvgWin = monthlyWins.length > 0
-    ? monthlyWins.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0) / monthlyWins.length
-    : 0;
-  const monthlyAvgLoss = monthlyLosses.length > 0
-    ? monthlyLosses.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0) / monthlyLosses.length
-    : 0;
+  const monthlyAvgWin =
+    monthlyWins.length > 0
+      ? monthlyWins.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0) /
+        monthlyWins.length
+      : 0;
+  const monthlyAvgLoss =
+    monthlyLosses.length > 0
+      ? monthlyLosses.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0) /
+        monthlyLosses.length
+      : 0;
 
   // Helper to get stats for a single day
   const getDayStats = (dateStr: string) => {
@@ -193,20 +209,32 @@ export const Calendar: React.FC<CalendarProps> = ({
         {/* Net P&L Card */}
         <div className="glass-panel rounded-2xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
           <div>
-            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Monthly Net P&L</span>
-            <span className={`text-xl font-extrabold font-sans block mt-1 ${monthlyNetPnl >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
-              {monthlyNetPnl >= 0 ? `+$${monthlyNetPnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : `-$${Math.abs(monthlyNetPnl).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+              Monthly Net P&L
+            </span>
+            <span
+              className={`text-xl font-extrabold font-sans block mt-1 ${monthlyNetPnl >= 0 ? "text-emerald-500" : "text-rose-500"}`}
+            >
+              {monthlyNetPnl >= 0
+                ? `+$${monthlyNetPnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                : `-$${Math.abs(monthlyNetPnl).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
             </span>
           </div>
           <div className="absolute right-3 bottom-3 p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
-            {monthlyNetPnl >= 0 ? <TrendingUp className="h-5 w-5 text-emerald-500" /> : <TrendingDown className="h-5 w-5 text-rose-500" />}
+            {monthlyNetPnl >= 0 ? (
+              <TrendingUp className="h-5 w-5 text-emerald-500" />
+            ) : (
+              <TrendingDown className="h-5 w-5 text-rose-500" />
+            )}
           </div>
         </div>
 
         {/* Win Rate Card */}
         <div className="glass-panel rounded-2xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
           <div>
-            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Monthly Win Rate</span>
+            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+              Monthly Win Rate
+            </span>
             <span className="text-xl font-extrabold text-slate-800 dark:text-slate-100 font-sans block mt-1">
               {monthlyWinRate.toFixed(1)}%
             </span>
@@ -219,7 +247,9 @@ export const Calendar: React.FC<CalendarProps> = ({
         {/* Total Trades Card */}
         <div className="glass-panel rounded-2xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
           <div>
-            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Monthly Trades</span>
+            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+              Monthly Trades
+            </span>
             <span className="text-xl font-extrabold text-slate-800 dark:text-slate-100 font-sans block mt-1">
               {monthlyTotalTrades} Trades
             </span>
@@ -232,11 +262,17 @@ export const Calendar: React.FC<CalendarProps> = ({
         {/* Avg Win/Loss Card */}
         <div className="glass-panel rounded-2xl p-4 flex flex-col justify-between shadow-sm relative overflow-hidden">
           <div>
-            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Avg Win / Avg Loss</span>
+            <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+              Avg Win / Avg Loss
+            </span>
             <div className="flex gap-2 items-center mt-1">
-              <span className="text-xs font-bold text-emerald-500 font-sans">+${Math.round(monthlyAvgWin)}</span>
+              <span className="text-xs font-bold text-emerald-500 font-sans">
+                +${Math.round(monthlyAvgWin)}
+              </span>
               <span className="text-slate-400">/</span>
-              <span className="text-xs font-bold text-rose-500 font-sans">-${Math.round(Math.abs(monthlyAvgLoss))}</span>
+              <span className="text-xs font-bold text-rose-500 font-sans">
+                -${Math.round(Math.abs(monthlyAvgLoss))}
+              </span>
             </div>
           </div>
         </div>
@@ -248,7 +284,9 @@ export const Calendar: React.FC<CalendarProps> = ({
           {/* Header row */}
           <div className="flex items-center justify-between mb-5">
             <span className="font-extrabold text-base text-slate-800 dark:text-slate-100 font-sans">
-              {new Date(year, month).toLocaleString("default", { month: "long" })}{" "}
+              {new Date(year, month).toLocaleString("default", {
+                month: "long",
+              })}{" "}
               {year}
             </span>
             <div className="flex gap-2">
@@ -263,7 +301,9 @@ export const Calendar: React.FC<CalendarProps> = ({
                   const now = new Date();
                   setMonth(now.getMonth());
                   setYear(now.getFullYear());
-                  onSelectDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`);
+                  onSelectDate(
+                    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`,
+                  );
                 }}
                 className="px-3 py-1.5 rounded-xl border border-slate-200/50 dark:border-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all text-xs font-bold text-slate-600 dark:text-slate-400"
               >
@@ -279,10 +319,13 @@ export const Calendar: React.FC<CalendarProps> = ({
           </div>
 
           {/* 8-Column Grid Header: Weekdays + Weekly P&L (Tradezella Layout) */}
-          <div className="grid grid-cols-8 gap-2 text-center text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-200/40 dark:border-slate-800/40 pb-2">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "W-P&L"].map((d) => (
-              <div key={d}>{d}</div>
-            ))}
+
+          <div className="grid grid-cols-8 gap-2 text-center text-xs font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-200/40 dark:border-slate-800/40 pb-2">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "W-P&L"].map(
+              (d) => (
+                <div key={d}>{d}</div>
+              ),
+            )}
           </div>
 
           {/* Days Grid */}
@@ -291,18 +334,22 @@ export const Calendar: React.FC<CalendarProps> = ({
               const { weekPnl, totalTrades } = getWeekStats(week);
               const pnlPercent = (weekPnl / initialBalance) * 100;
               const hasWeekTrades = totalTrades > 0;
-
-              let weekCellStyle = "aspect-square relative rounded-xl font-bold flex flex-col justify-between p-1.5 transition-all select-none border text-left";
+              /**ring-1 ring-gray-300 hover:ring-2 hover:ring-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 */
+              let weekCellStyle =
+                "ml-4 aspect-square relative rounded-xl font-bold flex flex-col justify-between p-3 transition-all select-none --border text-left dark:ring-3 ring-2 dark:ring-blue-900 ring-[#FAEBD7] hover:ring-[#FAEBD7] dark:hover:ring-4 hover:ring-3 dark:hover:ring-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500";
               if (hasWeekTrades) {
                 if (weekPnl >= 0) {
-                  weekCellStyle += " bg-emerald-500/5 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25";
+                  weekCellStyle +=
+                    " --bg-emerald-500/5 --dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 --border-emerald-500/25";
                 } else {
-                  weekCellStyle += " bg-rose-500/5 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/25";
+                  weekCellStyle +=
+                    " --bg-rose-500/5 --dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 --border-rose-500/25";
                 }
               } else {
-                weekCellStyle += " bg-slate-50/10 dark:bg-slate-900/10 text-slate-450 dark:text-slate-550 border-slate-200/10 dark:border-slate-800/10 opacity-40";
+                weekCellStyle +=
+                  " --bg-slate-50/10 --dark:bg-slate-900/10 --text-slate-450 --dark:text-slate-550 --border-slate-200/10 dark:border-slate-800/10 opacity-40 space-y-2";
               }
-
+              /**🎤🎤🎤 */
               return (
                 <div key={weekIdx} className="grid grid-cols-8 gap-2">
                   {/* Render the 7 days */}
@@ -320,20 +367,25 @@ export const Calendar: React.FC<CalendarProps> = ({
                     const { total, pnl } = getDayStats(dateStr);
                     const hasDayTrades = total > 0;
 
-                    let cellStyle = "border border-slate-200/40 dark:border-slate-800/30 text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-900/80";
+                    let cellStyle =
+                      "border border-slate-200/40 dark:border-slate-800/30 text-slate-500 dark:text-slate-400 bg-gray-200/40 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-900/80";
 
                     if (hasDayTrades) {
                       if (pnl > 0) {
-                        cellStyle = "cal-day-win hover:bg-emerald-500/15 dark:hover:bg-emerald-500/25";
+                        cellStyle =
+                          "cal-day-win hover:bg-emerald-500/15 dark:hover:bg-emerald-500/25";
                       } else if (pnl < 0) {
-                        cellStyle = "cal-day-loss hover:bg-rose-500/15 dark:hover:bg-rose-500/25";
+                        cellStyle =
+                          "cal-day-loss hover:bg-rose-500/15 dark:hover:bg-rose-500/25";
                       } else {
-                        cellStyle = "cal-day-be hover:bg-amber-500/15 dark:hover:bg-amber-500/25";
+                        cellStyle =
+                          "cal-day-be hover:bg-amber-500/15 dark:hover:bg-amber-500/25";
                       }
                     }
 
                     if (isSelected) {
-                      cellStyle += " ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-950 scale-[0.98] z-10 shadow-md";
+                      cellStyle +=
+                        " ring-2 ring-indigo-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-slate-950 scale-[0.98] z-10 shadow-md";
                     }
 
                     const dayNumber = dateStr.split("-")[2];
@@ -354,25 +406,34 @@ export const Calendar: React.FC<CalendarProps> = ({
                       <button
                         key={dateStr}
                         onClick={() => {
-                          if (hasDayTrades) {
-                            handleDayClick(dateStr);
+                          if (isSelected) {
+                            if (hasDayTrades) {
+                              handleDayClick(dateStr);
+                            } else onNewTrade();
                           }
-                        }}
-                        onDoubleClick={() => {
                           onSelectDate(dateStr);
-                          onNewTrade();
                         }}
+                        // onDoubleClick={() => {
+                        //   onSelectDate(dateStr);
+                        //   if (hasDayTrades) {
+                        //     handleDayClick(dateStr);
+                        //   } else onNewTrade();
+                        // }}
                         onTouchStart={handleTouchStart}
                         className={`aspect-square relative rounded-xl font-bold flex flex-col justify-between p-1.5 transition-all select-none ${cellStyle}`}
                       >
-                        <span className="self-start text-[10px] opacity-80">{Number(dayNumber)}</span>
+                        <span className="self-end text-[10px] opacity-80">
+                          {Number(dayNumber)}
+                        </span>
 
                         {hasDayTrades && (
-                          <div className="w-full text-center flex flex-col justify-center items-center flex-1">
-                            <span className="text-[9px] font-extrabold leading-tight block">
-                              {pnl >= 0 ? `+$${Math.round(pnl)}` : `-$${Math.round(Math.abs(pnl))}`}
+                          <div className="w-full text-right flex flex-col justify-center  items-right flex-1">
+                            <span className="text-lg text-black/70 dark:text-white/70 font-extrabold leading-tight block">
+                              {pnl >= 0
+                                ? `+$${Math.round(pnl)}`
+                                : `-$${Math.round(Math.abs(pnl))}`}
                             </span>
-                            <span className="text-[7px] opacity-75 font-semibold leading-none block mt-0.5">
+                            <span className="text-xs text-black/60 dark:text-white/60 opacity-75 font-semibold leading-none block mt-0.5">
                               {total} {total === 1 ? "Trade" : "Trades"}
                             </span>
                           </div>
@@ -383,17 +444,24 @@ export const Calendar: React.FC<CalendarProps> = ({
 
                   {/* Render the 8th column: Weekly summary */}
                   <div className={weekCellStyle}>
-                    <span className="self-start text-[8px] opacity-85 uppercase tracking-wider">W{weekIdx + 1}</span>
-                    <div className="w-full text-center flex flex-col justify-center items-center flex-1">
-                      <span className="text-[9px] font-extrabold leading-tight block">
-                        {hasWeekTrades ? (weekPnl >= 0 ? `+$${Math.round(weekPnl)}` : `-$${Math.round(Math.abs(weekPnl))}`) : "$0"}
+                    <span className="self-start text-[10px] opacity-85 uppercase tracking-wider dark:text-gray-300! text-black/60!">
+                      W{weekIdx + 1}
+                    </span>
+                    <div className="w-full text-left flex flex-col justify-center items-left flex-1 gap-2">
+                      <span className="text-lg font-extrabold leading-tight block">
+                        {hasWeekTrades
+                          ? weekPnl >= 0
+                            ? `+$${Math.round(weekPnl)}`
+                            : `-$${Math.round(Math.abs(weekPnl))}`
+                          : "$0"}
                       </span>
-                      <span className="text-[7px] opacity-75 font-semibold leading-none block mt-0.5">
+                      <span className="text-xs opacity-75 font-semibold leading-none block mt-0.5 dark:text-gray-300! text-black/60">
                         {totalTrades} {totalTrades === 1 ? "Trade" : "Trades"}
                       </span>
                       {hasWeekTrades && (
-                        <span className="text-[7px] opacity-80 font-bold leading-none block mt-0.5">
-                          {weekPnl >= 0 ? "+" : ""}{pnlPercent.toFixed(1)}%
+                        <span className="text-xs opacity-80 font-bold leading-none block mt-0.5 dark:text-gray-300 text-black/60">
+                          {weekPnl >= 0 ? "+" : ""}
+                          {pnlPercent.toFixed(1)}%
                         </span>
                       )}
                     </div>
@@ -422,66 +490,71 @@ export const Calendar: React.FC<CalendarProps> = ({
       </div>
 
       {/* Day Trades Modal Overlay */}
-      {showDayModal && createPortal(
-        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div className="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl max-w-4xl w-full p-6 shadow-2xl overflow-hidden animate-slide-up backdrop-blur-xl max-h-[90vh] flex flex-col">
-            {/* Top brand line */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-indigo-600" />
-            
-            {/* Header */}
-            <div className="flex justify-between items-center pb-4 mb-4 border-b border-slate-100 dark:border-slate-800/50">
-              <div>
-                <h3 className="font-extrabold text-base text-slate-800 dark:text-slate-100 font-sans tracking-tight">
-                  Trades for {new Date(selectedDate + "T00:00:00").toLocaleDateString(undefined, {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </h3>
-                <p className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-0.5">
-                  Click trade row to expand setup details & screenshots
-                </p>
+      {showDayModal &&
+        createPortal(
+          <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 --backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div className="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl max-w-4xl w-full p-6 shadow-2xl overflow-hidden animate-slide-up backdrop-blur-xl max-h-[90vh] flex flex-col">
+              {/* Top brand line */}
+              {/* <div className="absolute top-0 left-0 right-0 h-1.5 bg-indigo-600" /> */}
+
+              {/* Header */}
+              <div className="flex justify-between items-center pb-4 mb-4 border-b border-slate-100 dark:border-slate-800/50">
+                <div>
+                  <h3 className="font-extrabold text-base text-slate-800 dark:text-slate-100 font-sans tracking-tight">
+                    Trades for{" "}
+                    {new Date(selectedDate + "T00:00:00").toLocaleDateString(
+                      undefined,
+                      {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
+                  </h3>
+                  <p className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-0.5">
+                    Click trade row to expand setup details & screenshots
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowDayModal(false)}
+                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 transition-all font-extrabold text-sm"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setShowDayModal(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 transition-all font-extrabold text-sm"
-              >
-                <X className="h-4 w-4" />
-              </button>
+
+              {/* Body content */}
+              <div className="overflow-y-auto flex-1 max-h-[60vh] pr-1">
+                <TradeList
+                  trades={trades.filter((t) => t.date === selectedDate)}
+                  onDeleteTrade={onDeleteTrade}
+                  pairs={pairs}
+                />
+              </div>
+
+              {/* Footer options */}
+              <div className="flex justify-between items-center pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/50">
+                <button
+                  onClick={() => {
+                    setShowDayModal(false);
+                    onNewTrade();
+                  }}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all active:scale-[0.98] shadow-md shadow-indigo-600/10"
+                >
+                  <Plus className="h-4 w-4" /> Log Trade on this date
+                </button>
+                <button
+                  onClick={() => setShowDayModal(false)}
+                  className="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-500 transition-all"
+                >
+                  Close
+                </button>
+              </div>
             </div>
-            
-            {/* Body content */}
-            <div className="overflow-y-auto flex-1 max-h-[60vh] pr-1">
-              <TradeList
-                trades={trades.filter((t) => t.date === selectedDate)}
-                onDeleteTrade={onDeleteTrade}
-                pairs={pairs}
-              />
-            </div>
-            
-            {/* Footer options */}
-            <div className="flex justify-between items-center pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/50">
-              <button
-                onClick={() => {
-                  setShowDayModal(false);
-                  onNewTrade();
-                }}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all active:scale-[0.98] shadow-md shadow-indigo-600/10"
-              >
-                <Plus className="h-4 w-4" /> Log Trade on this date
-              </button>
-              <button
-                onClick={() => setShowDayModal(false)}
-                className="px-4 py-2 text-xs font-bold border border-slate-200 dark:border-slate-800/80 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-500 transition-all"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

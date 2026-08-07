@@ -10,7 +10,12 @@ import { useTheme } from "./hooks/useTheme";
 import { useTrades } from "./hooks/useTrades";
 import { useSettings } from "./hooks/useSettings";
 import { api } from "./services/api";
-import { todayStr, getDayStatus, getWeekStatus, getWeekId } from "./utils/helpers";
+import {
+  todayStr,
+  getDayStatus,
+  getWeekStatus,
+  getWeekId,
+} from "./utils/helpers";
 import { exportWeeklyReport } from "./utils/docxExport";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useModals } from "./hooks/useModals";
@@ -24,11 +29,18 @@ const App: React.FC = () => {
   const [showTradeForm, setShowTradeForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(todayStr());
 
-  const { settings, loading: settingsLoading, updatePairs, updateTheme } = useSettings();
+  const {
+    settings,
+    loading: settingsLoading,
+    updatePairs,
+    updateTheme,
+  } = useSettings();
   const { theme, toggleTheme } = useTheme(settings.theme);
 
   // Load accounts using React Query
-  const { data: accounts = [], isLoading: accountsLoading } = useQuery<Account[]>({
+  const { data: accounts = [], isLoading: accountsLoading } = useQuery<
+    Account[]
+  >({
     queryKey: ["accounts"],
     queryFn: api.getAccounts,
   });
@@ -150,7 +162,10 @@ const App: React.FC = () => {
               {/* Cards Grid Skeleton */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-28 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/20 dark:border-slate-800/20"></div>
+                  <div
+                    key={i}
+                    className="h-28 bg-slate-200/50 dark:bg-slate-800/40 rounded-2xl border border-slate-200/20 dark:border-slate-800/20"
+                  ></div>
                 ))}
               </div>
             </div>

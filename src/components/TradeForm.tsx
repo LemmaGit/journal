@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { X, Upload, Trash2, Image as ImageIcon, AlertCircle } from "lucide-react";
+import {
+  X,
+  Upload,
+  Trash2,
+  Image as ImageIcon,
+  AlertCircle,
+} from "lucide-react";
 import type { Trade } from "../types";
 
 interface TradeFormProps {
@@ -12,7 +18,14 @@ interface TradeFormProps {
 
 const PSYCH_TAGS = {
   positive: ["Discipline", "Patience", "Calm", "Plan Followed", "Acceptance"],
-  negative: ["FOMO", "Revenge Trading", "Greed", "Fear", "Overtrading", "Early Exit"],
+  negative: [
+    "FOMO",
+    "Revenge Trading",
+    "Greed",
+    "Fear",
+    "Overtrading",
+    "Early Exit",
+  ],
 };
 
 export const TradeForm: React.FC<TradeFormProps> = ({
@@ -25,19 +38,19 @@ export const TradeForm: React.FC<TradeFormProps> = ({
   const [pair, setPair] = useState(pairs[0] || "EURUSD");
   const [direction, setDirection] = useState<"Long" | "Short">("Long");
   const [result, setResult] = useState<"Win" | "Loss" | "BE">("Win");
-  
+
   const [risk, setRisk] = useState<number>(100);
   const [riskPercent, setRiskPercent] = useState<number>(1);
   const [rr, setRr] = useState<number>(2);
-  
+
   const [pnl, setPnl] = useState<number>(200);
   const [isCustomPnl, setIsCustomPnl] = useState(false);
-  
+
   const [entryPrice, setEntryPrice] = useState<string>("");
   const [exitPrice, setExitPrice] = useState<string>("");
   const [sl, setSl] = useState<string>("");
   const [tp, setTp] = useState<string>("");
-  
+
   const [notes, setNotes] = useState("");
   const [psychNotes, setPsychNotes] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -77,20 +90,20 @@ export const TradeForm: React.FC<TradeFormProps> = ({
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    
+
     Array.from(files).forEach((file) => {
       if (file.size > 5 * 1024 * 1024) {
         setErrorMsg("Images must be smaller than 5MB");
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
@@ -142,16 +155,16 @@ export const TradeForm: React.FC<TradeFormProps> = ({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-md transition-opacity duration-300"
+      <div
+        className="absolute inset-0 bg-slate-900/60 dark:bg-black/80 --backdrop-blur-md transition-opacity duration-300"
         onClick={onCancel}
       />
-      
+
       {/* Modal Card */}
-      <div className="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl max-w-2xl w-full p-6 shadow-2xl overflow-hidden animate-slide-up backdrop-blur-xl max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl max-w-2xl w-full p-6 shadow-2xl overflow-hidden animate-slide-up --backdrop-blur-xl max-h-[90vh] overflow-y-auto">
         {/* Top brand line */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-indigo-600" />
-        
+        {/* <div className="absolute top-0 left-0 right-0 h-1.5 bg-indigo-600" /> */}
+
         {/* Header */}
         <div className="flex justify-between items-center pb-4 mb-4 border-b border-slate-100 dark:border-slate-800/50">
           <div>
@@ -298,7 +311,9 @@ export const TradeForm: React.FC<TradeFormProps> = ({
                 required
                 min="0"
                 value={risk}
-                onChange={(e) => setRisk(Math.max(0, parseFloat(e.target.value) || 0))}
+                onChange={(e) =>
+                  setRisk(Math.max(0, parseFloat(e.target.value) || 0))
+                }
                 className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
               />
             </div>
@@ -314,7 +329,9 @@ export const TradeForm: React.FC<TradeFormProps> = ({
                 min="0"
                 step="0.01"
                 value={riskPercent}
-                onChange={(e) => setRiskPercent(Math.max(0, parseFloat(e.target.value) || 0))}
+                onChange={(e) =>
+                  setRiskPercent(Math.max(0, parseFloat(e.target.value) || 0))
+                }
                 className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
               />
             </div>
@@ -330,7 +347,9 @@ export const TradeForm: React.FC<TradeFormProps> = ({
                 min="0"
                 step="0.1"
                 value={rr}
-                onChange={(e) => setRr(Math.max(0, parseFloat(e.target.value) || 0))}
+                onChange={(e) =>
+                  setRr(Math.max(0, parseFloat(e.target.value) || 0))
+                }
                 className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
               />
             </div>
@@ -343,11 +362,15 @@ export const TradeForm: React.FC<TradeFormProps> = ({
                 <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide block">
                   Net Profit / Loss
                 </span>
-                <span className={`text-lg font-extrabold font-sans block mt-1 ${pnl >= 0 ? "text-emerald-500" : "text-rose-500"}`}>
-                  {pnl >= 0 ? `+$${pnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : `-$${Math.abs(pnl).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                <span
+                  className={`text-lg font-extrabold font-sans block mt-1 ${pnl >= 0 ? "text-emerald-500" : "text-rose-500"}`}
+                >
+                  {pnl >= 0
+                    ? `+$${pnl.toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+                    : `-$${Math.abs(pnl).toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                 </span>
               </div>
-              
+
               <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-bold text-slate-500 dark:text-slate-400">
                 <input
                   type="checkbox"
@@ -379,7 +402,9 @@ export const TradeForm: React.FC<TradeFormProps> = ({
               onClick={() => setShowAdvanced(!showAdvanced)}
               className="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-all flex items-center gap-1 cursor-pointer"
             >
-              {showAdvanced ? "Hide Advanced Parameters" : "Show Advanced (Prices & SL/TP)"}
+              {showAdvanced
+                ? "Hide Advanced Parameters"
+                : "Show Advanced (Prices & SL/TP)"}
             </button>
           </div>
 
@@ -548,8 +573,12 @@ export const TradeForm: React.FC<TradeFormProps> = ({
             <div className="flex flex-col sm:flex-row gap-3">
               <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/20 dark:bg-slate-950/20 hover:bg-slate-50 dark:hover:bg-slate-900/40 cursor-pointer transition-all min-h-24">
                 <Upload className="h-5 w-5 text-indigo-500 mb-1" />
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-450">Upload images</span>
-                <span className="text-[8px] text-slate-400">PNG, JPG up to 5MB</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-450">
+                  Upload images
+                </span>
+                <span className="text-[8px] text-slate-400">
+                  PNG, JPG up to 5MB
+                </span>
                 <input
                   type="file"
                   multiple
@@ -562,8 +591,15 @@ export const TradeForm: React.FC<TradeFormProps> = ({
               {screenshots.length > 0 && (
                 <div className="flex-1 flex gap-2 overflow-x-auto p-1 max-w-sm rounded-xl border border-slate-100 dark:border-slate-800/40 bg-slate-50/10 dark:bg-slate-950/10 items-center scrollbar-none">
                   {screenshots.map((src, idx) => (
-                    <div key={idx} className="relative shrink-0 h-16 w-16 rounded-lg border border-slate-250 dark:border-slate-800 overflow-hidden shadow-sm">
-                      <img src={src} alt={`Upload preview ${idx}`} className="h-full w-full object-cover" />
+                    <div
+                      key={idx}
+                      className="relative shrink-0 h-16 w-16 rounded-lg border border-slate-250 dark:border-slate-800 overflow-hidden shadow-sm"
+                    >
+                      <img
+                        src={src}
+                        alt={`Upload preview ${idx}`}
+                        className="h-full w-full object-cover"
+                      />
                       <button
                         type="button"
                         onClick={() => removeScreenshot(idx)}
@@ -598,6 +634,6 @@ export const TradeForm: React.FC<TradeFormProps> = ({
         </form>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
