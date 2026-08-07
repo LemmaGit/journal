@@ -21,6 +21,7 @@ interface CalendarProps {
   isLoading?: boolean;
   activeAccount: Account | null;
   onDeleteTrade: (id: string) => void;
+  onEditTrade?: (trade: Trade) => void;
   pairs: string[];
 }
 
@@ -32,6 +33,7 @@ export const Calendar: React.FC<CalendarProps> = ({
   isLoading = false,
   activeAccount,
   onDeleteTrade,
+  onEditTrade,
   pairs,
 }) => {
   const now = new Date();
@@ -156,9 +158,10 @@ export const Calendar: React.FC<CalendarProps> = ({
   const monthlyTotalTrades = monthlyTrades.length;
   const monthlyWins = monthlyTrades.filter((t) => t.result === "Win");
   const monthlyLosses = monthlyTrades.filter((t) => t.result === "Loss");
+  const monthlyDecidedTrades = monthlyWins.length + monthlyLosses.length;
   const monthlyWinRate =
-    monthlyTotalTrades > 0
-      ? (monthlyWins.length / monthlyTotalTrades) * 100
+    monthlyDecidedTrades > 0
+      ? (monthlyWins.length / monthlyDecidedTrades) * 100
       : 0;
 
   const monthlyAvgWin =
@@ -177,8 +180,10 @@ export const Calendar: React.FC<CalendarProps> = ({
     const dayTrades = trades.filter((t) => t.date === dateStr);
     const total = dayTrades.length;
     const wins = dayTrades.filter((t) => t.result === "Win").length;
+    const losses = dayTrades.filter((t) => t.result === "Loss").length;
+    const decided = wins + losses;
     const pnl = dayTrades.reduce((sum, t) => sum + (Number(t.pnl) || 0), 0);
-    const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
+    const winRate = decided > 0 ? Math.round((wins / decided) * 100) : 0;
     return { total, pnl, winRate };
   };
 
@@ -283,12 +288,24 @@ export const Calendar: React.FC<CalendarProps> = ({
         <div className="glass-panel rounded-2xl p-5 shadow-sm w-full">
           {/* Header row */}
           <div className="flex items-center justify-between mb-5">
-            <span className="font-extrabold text-base text-slate-800 dark:text-slate-100 font-sans">
-              {new Date(year, month).toLocaleString("default", {
-                month: "long",
-              })}{" "}
-              {year}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-base text-slate-800 dark:text-slate-100 font-sans">
+                {new Date(year, month).toLocaleString("default", {
+                  month: "long",
+                })}
+              </span>
+              <select
+                value={year}
+                onChange={(e) => setYear(parseInt(e.target.value))}
+                className="text-xs font-extrabold bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 rounded-xl px-2.5 py-1.5 text-slate-800 dark:text-slate-100 cursor-pointer outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              >
+                {Array.from({ length: 21 }, (_, i) => 2020 + i).map((y) => (
+                  <option key={y} value={y} className="dark:bg-slate-900 font-sans">
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => changeMonth(-1)}
@@ -529,6 +546,10 @@ export const Calendar: React.FC<CalendarProps> = ({
                 <TradeList
                   trades={trades.filter((t) => t.date === selectedDate)}
                   onDeleteTrade={onDeleteTrade}
+                  onEditTrade={(trade) => {
+                    setShowDayModal(false);
+                    if (onEditTrade) onEditTrade(trade);
+                  }}
                   pairs={pairs}
                 />
               </div>

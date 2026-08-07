@@ -129,7 +129,8 @@ export const PsychologyTab: React.FC<PsychologyTabProps> = ({ trades }) => {
               {Object.keys(tagBreakdown).map((tag) => {
                 const info = tagBreakdown[tag];
                 const isPositive = ["Discipline", "Patience", "Calm", "Plan Followed", "Acceptance"].includes(tag);
-                const winRate = info.total > 0 ? (info.win / info.total) * 100 : 0;
+                const decided = info.win + info.loss;
+                const winRate = decided > 0 ? (info.win / decided) * 100 : 0;
                 return (
                   <div key={tag} className="flex items-center justify-between text-xs pb-3 border-b border-slate-100 dark:border-slate-800 last:border-0 last:pb-0">
                     <div className="flex items-center gap-2">

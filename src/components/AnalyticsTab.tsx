@@ -97,7 +97,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ trades }) => {
   const pairStatsList = Object.keys(pairStats).map((p) => ({
     pair: p,
     ...pairStats[p],
-    winRate: pairStats[p].total > 0 ? (pairStats[p].wins / pairStats[p].total) * 100 : 0,
+    winRate: (pairStats[p].wins + pairStats[p].losses) > 0 ? (pairStats[p].wins / (pairStats[p].wins + pairStats[p].losses)) * 100 : 0,
   })).sort((a, b) => b.pnl - a.pnl);
 
   // --- 3. Weekday Performance ---

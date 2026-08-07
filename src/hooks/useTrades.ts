@@ -29,8 +29,20 @@ export const useTrades = (accountId: string | null) => {
     },
   });
 
+  const updateTradeMutation = useMutation({
+    mutationFn: api.updateTrade,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+      void queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+
   const addTrade = async (trade: Omit<Trade, "id">) => {
     return await addTradeMutation.mutateAsync(trade);
+  };
+
+  const updateTrade = async (trade: Trade) => {
+    return await updateTradeMutation.mutateAsync(trade);
   };
 
   const deleteTrade = async (id: string) => {
@@ -60,5 +72,5 @@ export const useTrades = (accountId: string | null) => {
     }
   };
 
-  return { trades, loading, addTrade, deleteTrade, clearAllTrades };
+  return { trades, loading, addTrade, updateTrade, deleteTrade, clearAllTrades };
 };

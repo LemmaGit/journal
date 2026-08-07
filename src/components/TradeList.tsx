@@ -10,18 +10,21 @@ import {
   Filter,
   Eye,
   X,
+  Edit,
 } from "lucide-react";
 import { useModals } from "../hooks/useModals";
 
 interface TradeListProps {
   trades: Trade[];
   onDeleteTrade: (id: string) => void;
+  onEditTrade?: (trade: Trade) => void;
   pairs: string[];
 }
 
 export const TradeList: React.FC<TradeListProps> = ({
   trades,
   onDeleteTrade,
+  onEditTrade,
   pairs,
 }) => {
   const { showConfirm } = useModals();
@@ -212,24 +215,34 @@ export const TradeList: React.FC<TradeListProps> = ({
                         </div>
                       </div>
 
-                      {/* Delete button */}
-                      <button
-                        onClick={async () => {
-                          const confirmed = await showConfirm({
-                            title: "Delete Trade Log",
-                            message: "Are you sure you want to delete this trade log? This action is permanent.",
-                            confirmText: "Delete",
-                            cancelText: "Cancel",
-                            type: "danger",
-                          });
-                          if (confirmed) {
-                            onDeleteTrade(t.id);
-                          }
-                        }}
-                        className="flex items-center justify-center gap-1.5 w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2 rounded-xl text-xs font-bold border border-rose-500/10 transition-all active:scale-95"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" /> Delete Trade Log
-                      </button>
+                      {/* Action buttons */}
+                      <div className="flex gap-2 pt-1">
+                        {onEditTrade && (
+                          <button
+                            onClick={() => onEditTrade(t)}
+                            className="flex-1 flex items-center justify-center gap-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 py-2 rounded-xl text-xs font-bold border border-indigo-500/15 transition-all active:scale-95 cursor-pointer"
+                          >
+                            <Edit className="h-3.5 w-3.5" /> Edit Trade
+                          </button>
+                        )}
+                        <button
+                          onClick={async () => {
+                            const confirmed = await showConfirm({
+                              title: "Delete Trade Log",
+                              message: "Are you sure you want to delete this trade log? This action is permanent.",
+                              confirmText: "Delete",
+                              cancelText: "Cancel",
+                              type: "danger",
+                            });
+                            if (confirmed) {
+                              onDeleteTrade(t.id);
+                            }
+                          }}
+                          className={`${onEditTrade ? "flex-1" : "w-full"} flex items-center justify-center gap-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 py-2 rounded-xl text-xs font-bold border border-rose-500/10 transition-all active:scale-95 cursor-pointer`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" /> Delete
+                        </button>
+                      </div>
                     </div>
 
                     {/* Panel 2: Notes & Psychology */}

@@ -22,11 +22,12 @@ import { useModals } from "./hooks/useModals";
 
 const App: React.FC = () => {
   const queryClient = useQueryClient();
-  const { showAlert } = useModals();
+  const { showAlert, showConfirm } = useModals();
 
   const [activeAccountId, setActiveAccountId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   const [showTradeForm, setShowTradeForm] = useState(false);
+  const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
   const [selectedDate, setSelectedDate] = useState(todayStr());
 
   const {
@@ -58,6 +59,7 @@ const App: React.FC = () => {
     trades,
     loading: tradesLoading,
     addTrade,
+    updateTrade,
     deleteTrade,
     clearAllTrades,
   } = useTrades(activeAccountId);
@@ -93,13 +95,51 @@ const App: React.FC = () => {
     });
   };
 
-  const handleAddTrade = async (tradeData: Omit<Trade, "id" | "accountId">) => {
+  const handleSaveTrade = async (tradeData: Omit<Trade, "id" | "accountId">) => {
     if (!activeAccountId) return;
-    await addTrade({
-      ...tradeData,
-      accountId: activeAccountId,
-    });
+    if (editingTrade) {
+      await updateTrade({
+        ...tradeData,
+        id: editingTrade.id,
+        accountId: activeAccountId,
+      });
+    } else {
+      await addTrade({
+        ...tradeData,
+        accountId: activeAccountId,
+      });
+    }
     setShowTradeForm(false);
+    setEditingTrade(null);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!activeAccountId) return;
+    const activeAcc = accounts.find((a) => a.id === activeAccountId);
+    if (!activeAcc) return;
+
+    const confirmed = await showConfirm({
+      title: "Delete Account",
+      message: `Are you sure you want to delete "${activeAcc.name}"? This action will permanently remove the account and all associated trade logs.`,
+      confirmText: "Delete Account",
+      cancelText: "Cancel",
+      type: "danger",
+    });
+
+    if (confirmed) {
+      try {
+        await api.deleteAccount(activeAccountId);
+        void queryClient.invalidateQueries({ queryKey: ["accounts"] });
+        setActiveAccountId(null);
+      } catch (err: any) {
+        console.error(err);
+        void showAlert({
+          title: "Account Deletion Failed",
+          message: err.message || "Failed to delete account.",
+          type: "danger",
+        });
+      }
+    }
   };
 
   const handleToggleTheme = () => {
@@ -142,7 +182,10 @@ const App: React.FC = () => {
           theme={theme}
           onToggleTheme={handleToggleTheme}
           onClearAll={handleClearAllTrades}
-          onNewTrade={() => setShowTradeForm(true)}
+          onNewTrade={() => {
+            setEditingTrade(null);
+            setShowTradeForm(true);
+          }}
           onExport={handleExportWeek}
           activeTab={activeTab}
           onSelectTab={setActiveTab}
@@ -151,6 +194,7 @@ const App: React.FC = () => {
           activeAccountId={activeAccountId}
           onSelectAccount={setActiveAccountId}
           onCreateAccount={handleCreateAccount}
+          onDeleteAccount={handleDeleteAccount}
         />
 
         {/* Tab Views */}
@@ -188,10 +232,17 @@ const App: React.FC = () => {
                   trades={trades}
                   selectedDate={selectedDate}
                   onSelectDate={setSelectedDate}
-                  onNewTrade={() => setShowTradeForm(true)}
+                  onNewTrade={() => {
+                    setEditingTrade(null);
+                    setShowTradeForm(true);
+                  }}
                   isLoading={tradesLoading}
                   activeAccount={activeAccount}
                   onDeleteTrade={deleteTrade}
+                  onEditTrade={(trade) => {
+                    setEditingTrade(trade);
+                    setShowTradeForm(true);
+                  }}
                   pairs={settings.pairs}
                 />
               )}
@@ -216,8 +267,12 @@ const App: React.FC = () => {
           <TradeForm
             pairs={settings.pairs}
             initialDate={selectedDate}
-            onSave={handleAddTrade}
-            onCancel={() => setShowTradeForm(false)}
+            initialTrade={editingTrade || undefined}
+            onSave={handleSaveTrade}
+            onCancel={() => {
+              setShowTradeForm(false);
+              setEditingTrade(null);
+            }}
           />
         )}
 

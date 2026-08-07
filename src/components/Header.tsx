@@ -27,6 +27,7 @@ interface HeaderProps {
   activeAccountId: string | null;
   onSelectAccount: (id: string) => void;
   onCreateAccount: (name: string, initialBalance: number) => Promise<void>;
+  onDeleteAccount?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -42,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   activeAccountId,
   onSelectAccount,
   onCreateAccount,
+  onDeleteAccount,
 }) => {
   // Navigation tabs
   const tabs = [
@@ -118,10 +120,20 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => setShowAddAccountModal(true)}
               title="Create new trading account"
-              className="p-2.5 rounded-xl bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 border border-indigo-500/15 hover:bg-indigo-600/20 transition-all active:scale-95"
+              className="p-2.5 rounded-xl bg-indigo-600/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400 border border-indigo-500/15 hover:bg-indigo-600/20 transition-all active:scale-95 cursor-pointer"
             >
               <Plus className="h-4 w-4" />
             </button>
+
+            {activeAccountId && onDeleteAccount && (
+              <button
+                onClick={onDeleteAccount}
+                title="Delete current trading account"
+                className="p-2.5 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/15 hover:bg-rose-500/20 transition-all active:scale-95 cursor-pointer"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2 flex-wrap justify-end">

@@ -12,6 +12,7 @@ import type { Trade } from "../types";
 interface TradeFormProps {
   pairs: string[];
   initialDate: string;
+  initialTrade?: Trade;
   onSave: (tradeData: Omit<Trade, "id" | "accountId">) => Promise<void> | void;
   onCancel: () => void;
 }
@@ -31,31 +32,34 @@ const PSYCH_TAGS = {
 export const TradeForm: React.FC<TradeFormProps> = ({
   pairs,
   initialDate,
+  initialTrade,
   onSave,
   onCancel,
 }) => {
-  const [date, setDate] = useState(initialDate);
-  const [pair, setPair] = useState(pairs[0] || "EURUSD");
-  const [direction, setDirection] = useState<"Long" | "Short">("Long");
-  const [result, setResult] = useState<"Win" | "Loss" | "BE">("Win");
+  const [date, setDate] = useState(initialTrade ? initialTrade.date : initialDate);
+  const [pair, setPair] = useState(initialTrade ? initialTrade.pair : (pairs[0] || "EURUSD"));
+  const [direction, setDirection] = useState<"Long" | "Short">(initialTrade ? initialTrade.direction : "Long");
+  const [result, setResult] = useState<"Win" | "Loss" | "BE">(initialTrade ? initialTrade.result : "Win");
 
-  const [risk, setRisk] = useState<number>(100);
-  const [riskPercent, setRiskPercent] = useState<number>(1);
-  const [rr, setRr] = useState<number>(2);
+  const [risk, setRisk] = useState<number>(initialTrade ? initialTrade.risk : 100);
+  const [riskPercent, setRiskPercent] = useState<number>(initialTrade ? initialTrade.riskPercent : 1);
+  const [rr, setRr] = useState<number>(initialTrade ? initialTrade.rr : 2);
 
-  const [pnl, setPnl] = useState<number>(200);
-  const [isCustomPnl, setIsCustomPnl] = useState(false);
+  const calculatedPnl = initialTrade 
+    ? (initialTrade.result === "Win" ? initialTrade.risk * initialTrade.rr : initialTrade.result === "Loss" ? -initialTrade.risk : 0)
+    : 200;
+  const [pnl, setPnl] = useState<number>(initialTrade ? initialTrade.pnl : 200);
+  const [isCustomPnl, setIsCustomPnl] = useState(initialTrade ? (initialTrade.pnl !== calculatedPnl) : false);
 
-  const [entryPrice, setEntryPrice] = useState<string>("");
-  const [exitPrice, setExitPrice] = useState<string>("");
-  const [sl, setSl] = useState<string>("");
-  const [tp, setTp] = useState<string>("");
+  const [entryPrice, setEntryPrice] = useState<string>(initialTrade?.entryPrice !== undefined ? initialTrade.entryPrice.toString() : "");
+  const [exitPrice, setExitPrice] = useState<string>(initialTrade?.exitPrice !== undefined ? initialTrade.exitPrice.toString() : "");
+  const [sl, setSl] = useState<string>(initialTrade?.sl !== undefined ? initialTrade.sl.toString() : "");
+  const [tp, setTp] = useState<string>(initialTrade?.tp !== undefined ? initialTrade.tp.toString() : "");
 
-  const [notes, setNotes] = useState("");
-  const [psychNotes, setPsychNotes] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [screenshots, setScreenshots] = useState<string[]>([]);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [notes, setNotes] = useState(initialTrade ? initialTrade.notes : "");
+  const [psychNotes, setPsychNotes] = useState(initialTrade ? initialTrade.psychNotes : "");
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTrade ? initialTrade.psychTags : []);
+  const [screenshots, setScreenshots] = useState<string[]>(initialTrade ? initialTrade.screenshots : []);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -87,6 +91,13 @@ export const TradeForm: React.FC<TradeFormProps> = ({
       setPair(pairs[0]);
     }
   }, [pairs, pair]);
+
+  // For loss the exit price is same as the SL
+  useEffect(() => {
+    if (result === "Loss" && sl) {
+      setExitPrice(sl);
+    }
+  }, [result, sl]);
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
@@ -169,7 +180,7 @@ export const TradeForm: React.FC<TradeFormProps> = ({
         <div className="flex justify-between items-center pb-4 mb-4 border-b border-slate-100 dark:border-slate-800/50">
           <div>
             <h3 className="font-extrabold text-base text-slate-800 dark:text-slate-100 font-sans tracking-tight flex items-center gap-2">
-              <ImageIcon className="h-5 w-5 text-indigo-500" /> Log New Trade
+              <ImageIcon className="h-5 w-5 text-indigo-500" /> {initialTrade ? "Edit Trade Log" : "Log New Trade"}
             </h3>
             <p className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase mt-0.5">
               Journal performance details & rule parameters
@@ -395,82 +406,68 @@ export const TradeForm: React.FC<TradeFormProps> = ({
             )}
           </div>
 
-          {/* Toggle Advanced Section */}
-          <div className="pt-1">
-            <button
-              type="button"
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs font-bold text-indigo-500 hover:text-indigo-600 transition-all flex items-center gap-1 cursor-pointer"
-            >
-              {showAdvanced
-                ? "Hide Advanced Parameters"
-                : "Show Advanced (Prices & SL/TP)"}
-            </button>
-          </div>
-
-          {showAdvanced && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 animate-slide-up">
-              {/* Entry Price */}
-              <div className="space-y-1">
-                <label className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
-                  Entry Price
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="1.0850"
-                  value={entryPrice}
-                  onChange={(e) => setEntryPrice(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
-                />
-              </div>
-
-              {/* Exit Price */}
-              <div className="space-y-1">
-                <label className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
-                  Exit Price
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="1.0920"
-                  value={exitPrice}
-                  onChange={(e) => setExitPrice(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
-                />
-              </div>
-
-              {/* SL */}
-              <div className="space-y-1">
-                <label className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
-                  Stop Loss (SL)
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="1.0820"
-                  value={sl}
-                  onChange={(e) => setSl(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
-                />
-              </div>
-
-              {/* TP */}
-              <div className="space-y-1">
-                <label className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
-                  Take Profit (TP)
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  placeholder="1.0950"
-                  value={tp}
-                  onChange={(e) => setTp(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
-                />
-              </div>
+          {/* Entry Price, Stop Loss, Take Profit, Exit Price grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+            {/* Entry Price */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                Entry Price
+              </label>
+              <input
+                type="number"
+                step="any"
+                placeholder="1.0850"
+                value={entryPrice}
+                onChange={(e) => setEntryPrice(e.target.value)}
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
+              />
             </div>
-          )}
+
+            {/* SL */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                Stop Loss (SL)
+              </label>
+              <input
+                type="number"
+                step="any"
+                placeholder="1.0820"
+                value={sl}
+                onChange={(e) => setSl(e.target.value)}
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
+              />
+            </div>
+
+            {/* TP */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                Take Profit (TP)
+              </label>
+              <input
+                type="number"
+                step="any"
+                placeholder="1.0950"
+                value={tp}
+                onChange={(e) => setTp(e.target.value)}
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
+              />
+            </div>
+
+            {/* Exit Price */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
+                Exit Price
+              </label>
+              <input
+                type="number"
+                step="any"
+                placeholder="1.0920"
+                value={exitPrice}
+                onChange={(e) => setExitPrice(e.target.value)}
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 dark:text-slate-200"
+              />
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Notes */}

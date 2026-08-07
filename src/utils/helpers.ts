@@ -81,7 +81,8 @@ export const calculateStats = (trades: Trade[]): Stats => {
   const losses = trades.filter((t) => t.result === "Loss").length;
   const bes = trades.filter((t) => t.result === "BE").length;
 
-  const winRate = total > 0 ? (wins / total) * 100 : 0;
+  const decidedTrades = wins + losses;
+  const winRate = decidedTrades > 0 ? (wins / decidedTrades) * 100 : 0;
   const avgRR = trades.reduce((sum, t) => sum + (Number(t.rr) || 0), 0) / (total || 1);
   const avgRisk = trades.reduce((sum, t) => sum + (Number(t.risk) || 0), 0) / (total || 1);
 

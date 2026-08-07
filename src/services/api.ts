@@ -108,6 +108,34 @@ export const api = {
     };
   },
 
+  updateTrade: async (tradeData: Trade): Promise<Trade> => {
+    const { id, ...body } = tradeData;
+    const t = await request<any>(`/trades/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    });
+    return {
+      id: t._id,
+      accountId: t.accountId,
+      date: t.date,
+      pair: t.pair,
+      direction: t.direction,
+      result: t.result,
+      risk: t.risk,
+      riskPercent: t.riskPercent,
+      rr: t.rr,
+      notes: t.notes,
+      psychNotes: t.psychNotes,
+      screenshots: t.screenshots || [],
+      pnl: t.pnl,
+      entryPrice: t.entryPrice,
+      exitPrice: t.exitPrice,
+      sl: t.sl,
+      tp: t.tp,
+      psychTags: t.psychTags || [],
+    };
+  },
+
   deleteTrade: async (id: string): Promise<void> => {
     await request<void>(`/trades/${id}`, {
       method: "DELETE",
