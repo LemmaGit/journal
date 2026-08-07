@@ -11,8 +11,11 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
     },
   });
 
+  console.log(res, "🔥");
+
   if (!res.ok) {
     const errorText = await res.text();
+    console.log(errorText, "🐌");
     throw new Error(errorText || `HTTP error ${res.status}`);
   }
 
